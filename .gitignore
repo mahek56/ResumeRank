@@ -53,6 +53,10 @@ uploads/
 Thumbs.db
 desktop.ini
 
+# --- Maven (local download, wrapper jar) ---
+backend/apache-maven-*/
+backend/.mvn/wrapper/maven-wrapper.jar
+
 # --- Misc ---
 *.swp
 *.swo
