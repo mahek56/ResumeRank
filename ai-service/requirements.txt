@@ -1,0 +1,33 @@
+# ============================================================
+# ResumeRank AI Service — Python dependencies
+# Install: pip install -r requirements.txt
+# ============================================================
+
+# --- Web framework ---
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+
+# --- PDF parsing ---
+pymupdf==1.25.5
+
+# --- NLP ---
+spacy==3.8.7
+# Model installed separately: python -m spacy download en_core_web_sm
+
+# --- Embeddings (primary scorer) ---
+sentence-transformers==4.1.0
+torch==2.7.1
+
+# --- TF-IDF fallback scorer ---
+scikit-learn==1.7.0
+
+# --- Config ---
+pydantic==2.11.3
+pydantic-settings==2.9.1
+
+# --- Utilities ---
+python-multipart==0.0.20
+
+# --- Testing ---
+pytest==8.4.1
+httpx==0.28.1

@@ -1,0 +1,59 @@
+# ============================================================
+# ResumeRank .gitignore
+# Covers: Java/Maven, Python, Node.js/Next.js, IDE, OS, env
+# ============================================================
+
+# --- Java / Maven ---
+backend/target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+.mvn/wrapper/maven-wrapper.jar
+
+# --- Python ---
+ai-service/__pycache__/
+ai-service/**/__pycache__/
+ai-service/.venv/
+ai-service/venv/
+ai-service/*.egg-info/
+ai-service/.pytest_cache/
+ai-service/.mypy_cache/
+*.pyc
+*.pyo
+
+# --- Node.js / Next.js ---
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.turbo/
+
+# --- Environment ---
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# --- Uploads (local file storage, ephemeral) ---
+uploads/
+
+# --- IDE ---
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Misc ---
+*.swp
+*.swo
+*~

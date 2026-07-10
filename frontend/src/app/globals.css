@@ -1,0 +1,158 @@
+/* ============================================================
+   ResumeRank — Global Styles & Tailwind v4 Design System
+   All design tokens defined via @theme (CSS-based config).
+   ============================================================ */
+
+@import "tailwindcss";
+
+/* ---- Design Tokens ---- */
+
+@theme inline {
+  /* --- Colors: dark dev-tool aesthetic --- */
+  --color-bg-primary: oklch(0.145 0.02 265);       /* deep navy-black */
+  --color-bg-secondary: oklch(0.175 0.02 265);     /* slightly lighter */
+  --color-bg-elevated: oklch(0.21 0.025 265);      /* cards, modals */
+  --color-bg-hover: oklch(0.25 0.025 265);         /* hover state */
+  --color-border: oklch(0.3 0.02 265);             /* subtle borders */
+  --color-border-focus: oklch(0.55 0.15 270);      /* focus ring */
+
+  --color-text-primary: oklch(0.95 0.01 265);      /* main text */
+  --color-text-secondary: oklch(0.7 0.02 265);     /* muted text */
+  --color-text-tertiary: oklch(0.5 0.02 265);      /* disabled / hints */
+
+  /* Accent — indigo */
+  --color-accent-50: oklch(0.97 0.02 270);
+  --color-accent-100: oklch(0.93 0.04 270);
+  --color-accent-200: oklch(0.87 0.08 270);
+  --color-accent-300: oklch(0.78 0.12 270);
+  --color-accent-400: oklch(0.68 0.16 270);
+  --color-accent-500: oklch(0.585 0.19 270);       /* primary accent */
+  --color-accent-600: oklch(0.52 0.19 270);
+  --color-accent-700: oklch(0.45 0.18 270);
+  --color-accent-800: oklch(0.38 0.15 270);
+  --color-accent-900: oklch(0.32 0.12 270);
+
+  /* Semantic colors */
+  --color-success: oklch(0.65 0.18 145);
+  --color-success-muted: oklch(0.3 0.08 145);
+  --color-warning: oklch(0.75 0.15 75);
+  --color-warning-muted: oklch(0.35 0.08 75);
+  --color-error: oklch(0.6 0.2 25);
+  --color-error-muted: oklch(0.3 0.1 25);
+  --color-info: oklch(0.65 0.15 230);
+  --color-info-muted: oklch(0.3 0.08 230);
+
+  /* --- Typography --- */
+  --font-sans: "Inter", "Geist Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 0.75rem;     /* 12px */
+  --text-sm: 0.875rem;    /* 14px */
+  --text-base: 1rem;      /* 16px */
+  --text-lg: 1.25rem;     /* 20px */
+  --text-xl: 1.5rem;      /* 24px */
+  --text-2xl: 2rem;       /* 32px */
+  --text-3xl: 3rem;       /* 48px */
+
+  /* --- Spacing (4px base, 8px rhythm) --- */
+  --spacing-1: 0.25rem;   /* 4px */
+  --spacing-2: 0.5rem;    /* 8px */
+  --spacing-3: 0.75rem;   /* 12px */
+  --spacing-4: 1rem;      /* 16px */
+  --spacing-6: 1.5rem;    /* 24px */
+  --spacing-8: 2rem;      /* 32px */
+  --spacing-12: 3rem;     /* 48px */
+  --spacing-16: 4rem;     /* 64px */
+
+  /* --- Border Radius --- */
+  --radius-sm: 6px;       /* inputs */
+  --radius-default: 8px;  /* buttons, badges */
+  --radius-lg: 12px;      /* cards, modals */
+  --radius-pill: 9999px;  /* pills, tags */
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.15);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.2), 0 2px 4px -2px oklch(0 0 0 / 0.15);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.25), 0 4px 6px -4px oklch(0 0 0 / 0.15);
+  --shadow-glow: 0 0 20px oklch(0.585 0.19 270 / 0.15);
+
+  /* --- Transitions --- */
+  --duration-micro: 150ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+
+  /* --- Breakpoints (defined as reference, used via Tailwind responsive) --- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* ---- Base Styles ---- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+}
+
+/* ---- Focus Ring (WCAG AA: 2px accent + 2px offset, never removed) ---- */
+
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ---- Respect prefers-reduced-motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Scrollbar (dark themed) ---- */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
+}
+
+/* ---- Selection ---- */
+
+::selection {
+  background: oklch(0.585 0.19 270 / 0.3);
+  color: var(--color-text-primary);
+}

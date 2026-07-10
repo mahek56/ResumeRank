@@ -1,0 +1,27 @@
+# ============================================================
+# ResumeRank — Production profile overrides
+# Activate with: SPRING_PROFILES_ACTIVE=prod
+# ============================================================
+
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    hikari:
+      maximum-pool-size: 5
+
+  jpa:
+    show-sql: false
+
+  flyway:
+    baseline-on-migrate: false
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+
+logging:
+  level:
+    com.resumerank: INFO
+    org.springframework.security: WARN
