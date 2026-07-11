@@ -5,65 +5,96 @@
   yml configs, Dockerfile
 - AI service scaffold done: requirements.txt, main.py, config.py, router 
   stubs (parse.py, score.py), Dockerfile
-- Frontend scaffolded: Next.js 16 (not 15 as plan said — npm pulled latest), 
-  Tailwind v4 @theme inline pattern, installed recharts/cmdk/clsx/lucide-react
-- npx tsc --noEmit: ✅ clean
-
-## Session 2 — Phase 1 verified + Phase 2 complete
-- Environment findings: Java 22 (not 17), no Maven, no Docker, no psql
-- Fixed Maven: downloaded Maven 3.9.9 locally, then ran `mvn wrapper:wrapper`
-  to generate proper mvnw/mvnw.cmd. Future builds use `.\mvnw.cmd` with no 
-  global install needed. Downloaded maven dir added to .gitignore.
-- Verifications:
-  - `npx tsc --noEmit` ✅ clean
-  - `.\mvnw.cmd clean compile` ✅ BUILD SUCCESS (compiles with javac release 17 
-    on Java 22, fully compatible)
-  - `docker compose up` ⚠️ skipped — Docker not installed
-- Phase 2 migrations created (V1-V6):
-  - V1: users (auto-verified demo mode)
-  - V2: jobs + skills (owner FK, cascade, unique constraint)
-  - V3: candidates (status enum, composite index)
-  - V4: candidate_skills + scores (scoring_method for transparency)
-  - V5: audit_logs (immutable, entity-indexed)
-  - V6: interview_summaries (bonus table, created for schema completeness)
-  - All 6 confirmed included in build ("Copying 6 resources")
-  - Cannot verify against live PG without Docker — syntax validated manually
-- Next: Phase 3 (Spring Boot Auth & Core CRUD)
-  - Start with: SecurityConfig, JwtService, JwtAuthFilter, AuthController
-  - Key: CSRF double-submit cookie pattern (user explicitly requested 
-    actual implementation, not just mention)
-  - Key: BCrypt cost 12, httpOnly Secure SameSite=Lax cookies
-
-## Session 3 — Phase 3 complete
-- SecurityConfig, JwtService, JwtAuthFilter, AuthController, User entity/repo
-- JobService, SkillService, AuditService + full CRUD controllers
-- GlobalExceptionHandler, custom exceptions, PageResponse/ErrorResponse DTOs
-- `mvnw.cmd clean compile` ✅ BUILD SUCCESS (40 source files)
-- BCrypt strength: bcrypt-strength: ${BCRYPT_STRENGTH:12} in application.yml
-- JwtService cookie: httpOnly=true, secure=cookieSecure (prod flag), SameSite=Lax, path=/
-- JobService: assertOwner() called in update() and delete() — throws ForbiddenException
-- GlobalExceptionHandler: catch-all handleAll(Exception) logs full stack trace
-  server-side (log.error) but returns generic 500 message "An unexpected error 
-  occurred. Please try again later." — no stack trace leaked to client
-
-## Session 4 — bucket4j compile fix + Phase 4 complete
-- Blocked on: RateLimitFilter using deprecated Bucket4j 7.x API
-- Root cause 1: pom.xml had bucket4j-core (old artifact name) — doesn't exist in 8.x
-- Root cause 2: package changed from io.bucket4j → io.github.bucket4j in 8.x
-- Root cause 3: version 8.10.1 doesn't exist on Maven Central; used 8.14.0
-- Root cause 4: Bandwidth.classic() + Refill.intervally() removed; use Bandwidth.builder()
-- Fixes applied:
-  - pom.xml: bucket4j-core:8.10.1 → bucket4j_jdk17-core:8.14.0 (com.bucket4j)
-  - RateLimitFilter.java: imports io.github.bucket4j.{Bandwidth,Bucket}
-  - RateLimitFilter.java: createBucket() uses Bandwidth.builder().capacity().refillIntervally().build()
-  - `mvnw.cmd clean compile` ✅ BUILD SUCCESS (40 source files, 9.2s)
-- Phase 4 FastAPI files created:
-  - app/models/schemas.py — ParseResponse, ScoreRequest/Response, InterviewSummaryRequest/Response
-  - app/utils/skill_taxonomy.py — ~200 normalized skills, normalize_skill_list()
-  - app/services/parser.py — PyMuPDF + n-gram skill match + spaCy NER + regex exp/edu
-  - app/services/scorer.py — sentence-transformers primary + TF-IDF fallback + weighted fuzzy keyword
-  - app/routers/parse.py — POST /parse-resume (full, validates PDF, calls parser)
-  - app/routers/score.py — POST /score (full, validates inputs, calls scorer)
-  - app/routers/interview.py — POST /interview-summary (stubbed for Phase 13)
-  - app/main.py — wired interview router
-- Next: Phase 5 (Spring Boot Candidate Flow + StorageService + AiServiceClient)
+- Frontend scaffolded: Next.js 16 (not 15 as plan said — npm pulled latest, 
+  need update plan.md/task.md to reflect this), Tailwind v4 @theme inline 
+  pattern, installed recharts/cmdk/clsx/lucide-react
+- Was running: npx tsc --noEmit to verify frontend types clean — result 
+  not yet confirmed
+- Next: run mvn clean compile (backend), npm run build (frontend), 
+  docker-compose up (verify all 3 services + Postgres talk to each other), 
+  then move to Phase 2 (database schema/Flyway migrations)
+  ## Session 2 — Phase 2 complete
+- Maven Wrapper set up (mvnw.cmd), Java 22 compiling at release 17, works fine
+- 6 Flyway migrations created (V1-V6), confirmed in build output, 
+  NOT yet run against real Postgres (Docker wasn't installed)
+- PENDING: install Docker Desktop, run docker-compose up, verify migrations 
+  apply cleanly
+- PENDING: check V1__create_users.sql has CREATE EXTENSION IF NOT EXISTS 
+  pgcrypto before gen_random_uuid() use — unverified risk
+- Next: once Docker verified + pgcrypto confirmed, move to Phase 3 
+  (Spring Boot Auth & Core CRUD)
+  ## Session 3 — Phase 3 IN PROGRESS (entities only, stopped mid-phase)
+- Docker + all 6 migrations verified against real Postgres (Session 2 
+  pending items now resolved)
+- pgcrypto added to V1 as safety net (PG16 has gen_random_uuid built-in, 
+  extension not strictly needed but harmless)
+- Phase 3 started: created AppProperties.java, CandidateStatus.java enum, 
+  and all 8 JPA entities (User, Job, Skill, Candidate, CandidateSkill, 
+  Score, AuditLog, InterviewSummary)
+- NOT yet done: repositories, JwtService/JwtAuthFilter, SecurityConfig, 
+  AuthController, JobController/SkillController, AuditService, 
+  GlobalExceptionHandler
+- Next: continue Phase 3 — repositories layer first, then security config, 
+  then controllers. Watch: BCrypt cost≥12, httpOnly+Secure+SameSite cookie, 
+  CSRF double-submit, Bucket4j rate limit actually wired (not just config), 
+  row-level owner check on Job CRUD, no stack trace leak in error responses
+  ## Session 4 — Phase 3 nearly complete, hit compile error
+- Built: repositories (User/Job/Skill/AuditLog), DTOs, exceptions, 
+  GlobalExceptionHandler, JwtService, JwtAuthFilter, SecurityConfig, 
+  CorsConfig, RateLimitFilter (custom, not bucket4j-spring-boot-starter), 
+  AuditService, AuthController, JobService/Controller, SkillService/
+  Controller, AuditController
+- SecurityConfig fixed to use .cors(Customizer.withDefaults()) linking 
+  CorsConfigurationSource bean
+- BLOCKED ON: bucket4j-core 8.x API changed — Bandwidth/Refill import paths 
+  different from what pom.xml deps expected. Was mid-fix (searched web for 
+  correct 8.10 API) when session hit limit.
+- NOT YET VERIFIED: BCrypt cost=12 setting, JWT cookie flags (httpOnly/
+  Secure/SameSite), row-level owner check in JobService, GlobalException
+  Handler doesn't leak stack trace
+- Next: fix bucket4j compile error, run mvnw clean compile, verify the 
+  4 security items above, then Phase 4 (FastAPI parse+score)
+  ## Session 5 — Phase 4 complete, Phase 5 not started (limit hit)
+- Phase 4 fully done: bucket4j fixed (io.github.bucket4j, bucket4j_jdk17-core, 
+  v8.14.0, builder API), FastAPI parser.py + scorer.py fully implemented, 
+  parse/score routers wired, all verified (BCrypt=12, JWT cookie flags, 
+  owner check, no stack trace leak all confirmed)
+- Was about to: confirm fuzzy threshold≥80 in scorer.py, verify sentence- 
+  transformers loads at startup via /health check
+- Phase 5 NOT started: StorageService, LocalStorageService, AiServiceClient, 
+  CandidateService (upload→parse→score→persist flow), CandidateController
+- Next: verify Phase 4 items above first, then build Phase 5 per 
+  implementation_plan.md. Keep scope tight — no retry/circuit-breaker 
+  frameworks, match plan exactly, avoid overengineering.
+  ## Session 6 — Phase 5 nearly complete
+- Phase 4 verified: fuzzy threshold=80 confirmed, /health check ran, 
+  currently in TF-IDF fallback mode (sentence-transformers not in local 
+  Python env — CONFIRM it's in requirements.txt for Docker build, this is 
+  just a local dev env gap not a code issue)
+- Phase 5 built: StorageService/LocalStorageService, ParseResponse/
+  AiScoreRequest/AiScoreResponse DTOs, CandidateUploadRequest/
+  CandidateResponse DTOs, AiServiceClient, CandidateRepository/
+  CandidateSkillRepository/ScoreRepository, CandidateService (full 
+  orchestration), CandidateController
+- Bugs self-caught+fixed: (1) persistScore used wrong findAll() query, 
+  fixed to findByCandidate; (2) file input stream reused after already 
+  consumed in uploadAndProcess, fixed to read bytes once upfront
+- NOT yet done: mvnw clean compile to verify everything compiles together, 
+  end-to-end test of upload flow
+- Next: compile check, then test actual PDF upload → parse → score → 
+  persist flow works, then Phase 6 (dashboard + CSV export)
+  ## Session 7 — Phase 5 verified, E2E test blocked (limit hit)
+- Phase 5 compile confirmed clean: mvnw clean compile → BUILD SUCCESS, 
+  53 source files
+- sentence-transformers==4.1.0 + torch==2.7.1 confirmed in requirements.txt 
+  — local TF-IDF fallback was just missing local pip install, Docker build 
+  will have it correctly
+- Docker Desktop was installed but daemon not running — agent launched it, 
+  was polling for daemon ready (up to 60s wait) when session hit limit
+- E2E test (actual PDF upload → parse → score → persist) STILL NOT RUN — 
+  this is the priority for next session
+- Phase 6 scoped ahead: CSV export already done in Phase 5 (bonus), so 
+  Phase 6 just needs DashboardResponse DTO, DashboardService, 
+  DashboardController — lean scope confirmed
+- Next: confirm Docker daemon running, run E2E test (upload real PDF, 
+  verify parse+score+persist works), THEN build Phase 6 dashboard files
