@@ -98,3 +98,16 @@
   DashboardController — lean scope confirmed
 - Next: confirm Docker daemon running, run E2E test (upload real PDF, 
   verify parse+score+persist works), THEN build Phase 6 dashboard files
+  ## Session 8 — Phase 6 complete, Docker rabbit hole (skip going forward)
+- Phase 6 fully built: DashboardResponse DTO, DashboardRepository, 
+  DashboardService (score distribution, status funnel, top missing skills), 
+  DashboardController. Compile clean: BUILD SUCCESS, 57 source files.
+- Agent spent significant time trying to get local Postgres running via 
+  Docker Desktop (WSL2 pipe issues) then pivoted to installing Postgres 
+  natively inside WSL via apt — still incomplete when session hit limit.
+- DECISION: STOP trying to fix local Docker/E2E testing for now. Real E2E 
+  test will happen after deployment (Phase 11) on the actual live 
+  environment — that's what matters for submission. Do not spend further 
+  session time on local Docker/WSL/Postgres setup.
+- Next: proceed straight to Phase 7 (Frontend: design system, auth pages, 
+  layout) — no more local infra debugging, just build features.
