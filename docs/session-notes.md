@@ -228,4 +228,14 @@
   - Frontend: Vercel (preferred — zero config for Next.js) or Render Docker;
     set NEXT_PUBLIC_API_URL=https://your-backend-url
   - Seed data runs automatically via Flyway on first backend startup.
-  - Demo login: demo@resumerank.dev / Demo1234!
+  - Demo login: demo@resumerank.dev / Demo1234!
+## Session 12 — URGENT deploy fixes
+- Fixed: Next.js login page useSearchParams Suspense boundary error
+- Fixed: AI service OOM on Render free tier (512MB) — added 
+  DISABLE_SENTENCE_TRANSFORMERS env var, skips torch import entirely at 
+  startup when set true, goes straight to TF-IDF (config.py + main.py, 
+  health endpoint now shows the flag status)
+- Next: verify register page doesn't have same useSearchParams issue, 
+  redeploy AI service on Render with DISABLE_SENTENCE_TRANSFORMERS=true 
+  env var set, retry docker compose up --build locally, then finish 
+  Backend + Frontend deploy (Steps 3-4)
