@@ -98,6 +98,26 @@
   DashboardController — lean scope confirmed
 - Next: confirm Docker daemon running, run E2E test (upload real PDF, 
   verify parse+score+persist works), THEN build Phase 6 dashboard files
+
+## Session 8 — Phase 6 complete (compile verified)
+- Docker Desktop daemon still not responding across multiple sessions (pipe
+  not available) — E2E test deferred; Postgres 16 is installed locally but
+  password unknown (user chose to skip)
+- Phase 6 built and compiled clean (57 source files, BUILD SUCCESS):
+  - DashboardResponse.java — nested DTOs: ScoreDistribution (5 bands),
+    ScoreRange (min/max/median), StatusFunnel (pending/shortlisted/rejected),
+    MissingSkillEntry (skill + count)
+  - DashboardRepository.java — JPQL aggregate queries: avg/min/max score,
+    sorted scores for median, band counts, status counts, missing_skills JSON
+  - DashboardService.java — full aggregation: histogram, median via sorted
+    list (no native SQL), status funnel, top-10 missing skills via Java JSON
+    parsing + frequency map. Owner check via JobService.assertOwner()
+  - DashboardController.java — GET /api/jobs/{id}/dashboard, single endpoint
+  - test-upload.sh — E2E bash script (for when Postgres + services are up)
+- Note: CSV export was already done in Phase 5 CandidateController.export()
+  so Phase 6 was just the dashboard — lean scope fully matched plan.md
+- Next: Phase 7 (frontend — Next.js dashboard, upload form, candidate table)
+  OR fix E2E test first by resetting Postgres password
   ## Session 8 — Phase 6 complete, Docker rabbit hole (skip going forward)
 - Phase 6 fully built: DashboardResponse DTO, DashboardRepository, 
   DashboardService (score distribution, status funnel, top missing skills), 
