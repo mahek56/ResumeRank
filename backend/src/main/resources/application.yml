@@ -43,12 +43,15 @@ app:
     secret: ${JWT_SECRET:dev-only-change-me-in-production-64-chars-minimum-for-hs512-alg}
     expiration-ms: ${JWT_EXPIRATION_MS:86400000}
     cookie-name: resumerank_token
+    cookie-secure: ${JWT_COOKIE_SECURE:false}
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
   ai-service:
     url: ${AI_SERVICE_URL:http://localhost:8000}
   storage:
     upload-dir: ${UPLOAD_DIR:./uploads}
+  security:
+    bcrypt-strength: ${BCRYPT_STRENGTH:12}
 
 # --- Logging ---
 logging:

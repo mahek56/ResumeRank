@@ -21,6 +21,11 @@ server:
     include-binding-errors: never
     include-stacktrace: never
 
+# Production: JWT cookie must be Secure (HTTPS only)
+app:
+  jwt:
+    cookie-secure: true
+
 logging:
   level:
     com.resumerank: INFO
