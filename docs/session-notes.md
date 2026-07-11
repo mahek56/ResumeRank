@@ -143,3 +143,16 @@
   under any circumstance until then.
 - Next: Phase 7 (Frontend: Design System, Auth & Layout) — pure frontend 
   work, no backend/DB dependency needed for this phase, so no infra risk.
+  ## Session 10 — Phase 7 partial (component library mostly done)
+- Built: src/lib/types.ts, src/lib/api.ts (fetch wrapper w/ 401 redirect), 
+  hooks (useAuth, useJobs, useCandidates, useDashboard), middleware.ts 
+  (JWT cookie guard)
+- UI components done: Button, Input, Card, Badge, Modal, Toast, Skeleton, 
+  Select, Table, Pagination, EmptyState
+- NOT yet done: ErrorState.tsx, CommandPalette.tsx, Sidebar.tsx, Header.tsx, 
+  auth layout + login/register pages, dashboard layout
+- TO VERIFY when reviewing: Toast auto-dismiss ~4s on success (per plan.md 
+  spec), Modal has focus trap + Escape-to-close (WCAG requirement)
+- Next: finish remaining Phase 7 components (ErrorState, CommandPalette, 
+  Sidebar, Header), then auth pages (login/register), then dashboard 
+  layout. Still zero DB/Docker dependency needed for rest of Phase 7.
