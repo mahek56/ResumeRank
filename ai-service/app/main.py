@@ -11,7 +11,7 @@ import logging
 
 from fastapi import FastAPI
 
-from app.config import settings
+from app.config import settings, DISABLE_SENTENCE_TRANSFORMERS
 from app.routers import interview, parse, score
 
 logger = logging.getLogger("resumerank.ai")
@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
     """Load NLP and embedding models at startup."""
     logger.info("Starting ResumeRank AI Service...")
 
-    # Load spaCy model
+    # Load spaCy model (lightweight, always loaded)
     try:
         import spacy
         app.state.nlp = spacy.load("en_core_web_sm")
@@ -37,24 +37,32 @@ async def lifespan(app: FastAPI):
         app.state.nlp = None
 
     # Load sentence-transformers model (primary scorer)
-    # Falls back to TF-IDF if this fails (e.g., OOM on free-tier)
-    app.state.scoring_method = "tfidf"  # default fallback
+    app.state.scoring_method = "tfidf"  # safe default
     app.state.embedding_model = None
 
-    try:
-        from sentence_transformers import SentenceTransformer
-        model = SentenceTransformer("all-MiniLM-L6-v2")
-        app.state.embedding_model = model
-        app.state.scoring_method = "sentence-transformers"
+    if DISABLE_SENTENCE_TRANSFORMERS:
+        # Fast path: skip import entirely — torch never enters the process.
+        # Memory footprint stays ~60 MB instead of ~450 MB.
+        # Scoring falls through to TF-IDF in scorer.py automatically.
         logger.info(
-            "Sentence-transformers model 'all-MiniLM-L6-v2' loaded. "
-            "Scoring method: sentence-transformers"
+            "DISABLE_SENTENCE_TRANSFORMERS=true — skipping sentence-transformers "
+            "and torch. Active scoring method: tfidf (memory-light mode)."
         )
-    except Exception as e:
-        logger.warning(
-            f"Failed to load sentence-transformers model: {e}. "
-            "Falling back to TF-IDF cosine similarity."
-        )
+    else:
+        try:
+            from sentence_transformers import SentenceTransformer
+            model = SentenceTransformer("all-MiniLM-L6-v2")
+            app.state.embedding_model = model
+            app.state.scoring_method = "sentence-transformers"
+            logger.info(
+                "Sentence-transformers model 'all-MiniLM-L6-v2' loaded. "
+                "Scoring method: sentence-transformers"
+            )
+        except Exception as e:
+            logger.warning(
+                f"Failed to load sentence-transformers model: {e}. "
+                "Falling back to TF-IDF cosine similarity."
+            )
 
     logger.info(f"Active scoring method: {app.state.scoring_method}")
 
@@ -87,6 +95,7 @@ async def health_check():
         "scoring_method": app.state.scoring_method,
         "spacy_loaded": app.state.nlp is not None,
         "embedding_model_loaded": app.state.embedding_model is not None,
+        "memory_light_mode": DISABLE_SENTENCE_TRANSFORMERS,
     }
 
 
