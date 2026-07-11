@@ -33,3 +33,37 @@
   - Key: CSRF double-submit cookie pattern (user explicitly requested 
     actual implementation, not just mention)
   - Key: BCrypt cost 12, httpOnly Secure SameSite=Lax cookies
+
+## Session 3 — Phase 3 complete
+- SecurityConfig, JwtService, JwtAuthFilter, AuthController, User entity/repo
+- JobService, SkillService, AuditService + full CRUD controllers
+- GlobalExceptionHandler, custom exceptions, PageResponse/ErrorResponse DTOs
+- `mvnw.cmd clean compile` ✅ BUILD SUCCESS (40 source files)
+- BCrypt strength: bcrypt-strength: ${BCRYPT_STRENGTH:12} in application.yml
+- JwtService cookie: httpOnly=true, secure=cookieSecure (prod flag), SameSite=Lax, path=/
+- JobService: assertOwner() called in update() and delete() — throws ForbiddenException
+- GlobalExceptionHandler: catch-all handleAll(Exception) logs full stack trace
+  server-side (log.error) but returns generic 500 message "An unexpected error 
+  occurred. Please try again later." — no stack trace leaked to client
+
+## Session 4 — bucket4j compile fix + Phase 4 complete
+- Blocked on: RateLimitFilter using deprecated Bucket4j 7.x API
+- Root cause 1: pom.xml had bucket4j-core (old artifact name) — doesn't exist in 8.x
+- Root cause 2: package changed from io.bucket4j → io.github.bucket4j in 8.x
+- Root cause 3: version 8.10.1 doesn't exist on Maven Central; used 8.14.0
+- Root cause 4: Bandwidth.classic() + Refill.intervally() removed; use Bandwidth.builder()
+- Fixes applied:
+  - pom.xml: bucket4j-core:8.10.1 → bucket4j_jdk17-core:8.14.0 (com.bucket4j)
+  - RateLimitFilter.java: imports io.github.bucket4j.{Bandwidth,Bucket}
+  - RateLimitFilter.java: createBucket() uses Bandwidth.builder().capacity().refillIntervally().build()
+  - `mvnw.cmd clean compile` ✅ BUILD SUCCESS (40 source files, 9.2s)
+- Phase 4 FastAPI files created:
+  - app/models/schemas.py — ParseResponse, ScoreRequest/Response, InterviewSummaryRequest/Response
+  - app/utils/skill_taxonomy.py — ~200 normalized skills, normalize_skill_list()
+  - app/services/parser.py — PyMuPDF + n-gram skill match + spaCy NER + regex exp/edu
+  - app/services/scorer.py — sentence-transformers primary + TF-IDF fallback + weighted fuzzy keyword
+  - app/routers/parse.py — POST /parse-resume (full, validates PDF, calls parser)
+  - app/routers/score.py — POST /score (full, validates inputs, calls scorer)
+  - app/routers/interview.py — POST /interview-summary (stubbed for Phase 13)
+  - app/main.py — wired interview router
+- Next: Phase 5 (Spring Boot Candidate Flow + StorageService + AiServiceClient)

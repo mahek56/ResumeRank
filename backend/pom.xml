@@ -91,11 +91,11 @@
             <version>1.12.0</version>
         </dependency>
 
-        <!-- Rate Limiting -->
+        <!-- Rate Limiting: bucket4j 8.x — artifact is bucket4j_jdk17-core for Java 17 -->
         <dependency>
             <groupId>com.bucket4j</groupId>
-            <artifactId>bucket4j-core</artifactId>
-            <version>8.10.1</version>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.14.0</version>
         </dependency>
 
         <!-- Test -->

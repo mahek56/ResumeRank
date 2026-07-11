@@ -12,7 +12,7 @@ import logging
 from fastapi import FastAPI
 
 from app.config import settings
-from app.routers import parse, score
+from app.routers import interview, parse, score
 
 logger = logging.getLogger("resumerank.ai")
 
@@ -76,6 +76,7 @@ app = FastAPI(
 # Register routers
 app.include_router(parse.router, prefix="/parse-resume", tags=["Parse"])
 app.include_router(score.router, prefix="/score", tags=["Score"])
+app.include_router(interview.router, prefix="/interview-summary", tags=["Interview"])
 
 
 @app.get("/health", tags=["Health"])

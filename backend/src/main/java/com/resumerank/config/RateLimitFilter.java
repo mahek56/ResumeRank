@@ -1,8 +1,7 @@
 package com.resumerank.config;
 
-import io.bucket4j.Bandwidth;
-import io.bucket4j.Bucket;
-import io.bucket4j.Refill;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,9 +70,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private Bucket createBucket() {
-        Bandwidth limit = Bandwidth.classic(MAX_REQUESTS,
-                Refill.intervally(MAX_REQUESTS, REFILL_PERIOD));
-        return Bucket.builder().addLimit(limit).build();
+        // Bucket4j 8.x API: Bandwidth.builder() replaces Bandwidth.classic() + Refill
+        Bandwidth limit = Bandwidth.builder()
+                .capacity(MAX_REQUESTS)
+                .refillIntervally(MAX_REQUESTS, REFILL_PERIOD)
+                .build();
+        return Bucket.builder()
+                .addLimit(limit)
+                .build();
     }
 
     private String getClientIp(HttpServletRequest request) {
