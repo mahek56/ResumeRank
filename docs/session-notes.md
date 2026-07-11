@@ -187,4 +187,16 @@
 - No Docker/DB dependency introduced — pure frontend, as specified.
 - Next: Phase 8 (Jobs list + create form, Candidate upload + table, 
   Dashboard charts with recharts). All routes now scaffolded, layout 
-  shell ready to fill in.
+  shell ready to fill in.
+## Session 11 — Phase 8 partial (urgent, submitting today)
+- Built: (dashboard)/jobs/page.tsx (list + create modal, EmptyState fixed 
+  to use {label, onClick} action prop), (dashboard)/jobs/[id]/page.tsx 
+  (candidates upload + table)
+- URGENT MODE: cutting scope hard per user instruction — no bulk actions, 
+  no CSV export UI, no keyboard j/k nav, no fancy dashboard charts (simple 
+  list/bar ok), minimal SEO (just title+meta), minimal seed data (1 job, 
+  5-6 candidates)
+- Next: finish Phase 8 core loop (confirm job create + candidate upload 
+  actually render correctly), then Phase 9 minimal (basic dashboard view, 
+  basic SEO tags), Phase 10 minimal seed data, then straight to deployment. 
+  Skip all polish/bonus features.
