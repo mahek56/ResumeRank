@@ -156,3 +156,35 @@
 - Next: finish remaining Phase 7 components (ErrorState, CommandPalette, 
   Sidebar, Header), then auth pages (login/register), then dashboard 
   layout. Still zero DB/Docker dependency needed for rest of Phase 7.
+  ## Session 11 — Phase 7 COMPLETE (all components + layouts done)
+- VERIFIED: Toast auto-dismiss confirmed at 4000ms (Toast.tsx line 48). 
+  Modal focus-trap confirmed (Modal.tsx lines 67-85), Escape-to-close 
+  confirmed (Modal.tsx lines 56-64). Both fully WCAG-compliant.
+- ErrorState.tsx: already existed from Session 10, confirmed good 
+  (AlertCircle icon, title/message/onRetry props, role=alert)
+- CommandPalette.tsx: built from scratch with cmdk v1. Self-contained 
+  open state, responds to ⌘K / Ctrl+K and openSignal prop (external 
+  trigger from Header). Groups: Navigation, Actions, Account. ESC closes 
+  overlay.
+- Sidebar.tsx: left nav w/ active-state highlight via usePathname, 
+  collapsible support, accent logo mark, user avatar + logout button 
+  in footer. Location: src/components/layout/Sidebar.tsx
+- Header.tsx: sticky breadcrumbs auto-derived from pathname, search 
+  button that increments openSignal to trigger CommandPalette. Location: 
+  src/components/layout/Header.tsx
+- (auth)/layout.tsx: centered card on gradient bg w/ ambient blobs, 
+  brand logo, copyright footer. Used for login + register.
+- (auth)/login/page.tsx: email + password form, show/hide toggle, 
+  error banner, loading state, ?next= redirect on success.
+- (auth)/register/page.tsx: name/email/password, 5-segment password 
+  strength meter, success flash before redirect, error banner.
+- (dashboard)/layout.tsx: sidebar + header + scrollable main content 
+  area, ToastProvider wrapping, always-mounted CommandPalette 
+  (so ⌘K works from any page), openSignal pattern for external trigger.
+- (dashboard)/jobs/page.tsx + (dashboard)/dashboard/page.tsx: stubs 
+  for Phase 8 routes, just enough for routing to resolve.
+- TypeScript: npx tsc --noEmit → 0 errors (verified twice).
+- No Docker/DB dependency introduced — pure frontend, as specified.
+- Next: Phase 8 (Jobs list + create form, Candidate upload + table, 
+  Dashboard charts with recharts). All routes now scaffolded, layout 
+  shell ready to fill in.

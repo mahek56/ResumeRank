@@ -44,8 +44,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     (message: string, variant: ToastVariant = "info") => {
       const id = crypto.randomUUID();
       setToasts((prev) => [...prev, { id, variant, message }]);
-      // Auto-dismiss after 5s
-      const timer = setTimeout(() => dismiss(id), 5000);
+      // Auto-dismiss after 4s
+      const timer = setTimeout(() => dismiss(id), 4000);
       timerMap.current.set(id, timer);
     },
     [dismiss]
