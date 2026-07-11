@@ -131,3 +131,15 @@
   session time on local Docker/WSL/Postgres setup.
 - Next: proceed straight to Phase 7 (Frontend: design system, auth pages, 
   layout) — no more local infra debugging, just build features.
+  ## Session 9 — Phase 6 confirmed complete, E2E fully deferred
+- Phase 6 (dashboard) compile-verified twice: BUILD SUCCESS, 57 source 
+  files, no errors
+- Extensive Docker/WSL/native-Postgres troubleshooting happened this 
+  session (Docker daemon never came up, WSL had no sudo password, found 
+  local Windows Postgres 16/17 install but password unknown) — ALL of this 
+  is now abandoned, do not revisit
+- FINAL DECISION: E2E testing happens only after deployment (Phase 11), 
+  on the real live environment. No more local DB/Docker setup attempts 
+  under any circumstance until then.
+- Next: Phase 7 (Frontend: Design System, Auth & Layout) — pure frontend 
+  work, no backend/DB dependency needed for this phase, so no infra risk.
