@@ -200,3 +200,32 @@
   actually render correctly), then Phase 9 minimal (basic dashboard view, 
   basic SEO tags), Phase 10 minimal seed data, then straight to deployment. 
   Skip all polish/bonus features.
+  ## Session 12 — Phases 8/9/10 COMPLETE, deployment-ready
+- Phase 8 verified: npx tsc --noEmit → 0 errors (confirmed twice, once 
+  before and once after Phase 9 additions)
+- Phase 9 done:
+  - (dashboard)/dashboard/page.tsx: stat cards (total/avg/range/shortlisted),
+    pure-CSS score distribution bar chart (no recharts), top missing skills 
+    chips, job selector for multi-job. Zero extra deps.
+  - app/page.tsx (landing): title tag + meta description exported via Next.js 
+    Metadata API, gradient headline, CTA buttons to /register + /login, 
+    feature checklist. Minimal but demoable.
+- Phase 10 done:
+  - V7__seed_demo_data.sql: 1 user (demo@resumerank.dev / Demo1234!, BCrypt 
+    cost-12 hash), 1 job "Senior Backend Engineer", 4 skills (Java/Spring 
+    Boot/PostgreSQL/Docker), 6 candidates with pre-computed scores ranging 
+    22–91 (covers full distribution for demo), statuses: 2 shortlisted, 
+    3 pending, 1 rejected.
+- Dockerfiles: all 3 services already had Dockerfiles (Phases 1-2). Added 
+  frontend/Dockerfile (Node 20 alpine, Next.js standalone output, non-root 
+  user), frontend/.dockerignore, wired frontend service into docker-compose.yml.
+- DEPLOY CHECKLIST:
+  - Backend: Render → New Web Service → Docker, env: SPRING_DATASOURCE_URL, 
+    SPRING_DATASOURCE_USERNAME, SPRING_DATASOURCE_PASSWORD, AI_SERVICE_URL, 
+    JWT_SECRET (64+ chars), CORS_ALLOWED_ORIGINS (frontend URL)
+  - AI service: Render → Docker, no env vars needed beyond port 8000
+  - Postgres: Render Postgres (free tier) or Supabase
+  - Frontend: Vercel (preferred — zero config for Next.js) or Render Docker;
+    set NEXT_PUBLIC_API_URL=https://your-backend-url
+  - Seed data runs automatically via Flyway on first backend startup.
+  - Demo login: demo@resumerank.dev / Demo1234!
