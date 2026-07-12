@@ -10,12 +10,15 @@
 import type { ApiError } from "./types";
 
 const getBaseUrl = () => {
+  // Always use relative paths in the browser so Next.js rewrites can proxy the request,
+  // completely bypassing third-party cookie blocking issues.
+  if (typeof window !== "undefined") {
+    return "";
+  }
+  // Server-side (RSC) needs absolute URL
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
   if (envUrl && envUrl !== "undefined" && envUrl !== "") {
     return envUrl.replace(/\/+$/, "");
-  }
-  if (typeof window !== "undefined" && window.location.hostname !== "localhost") {
-    return "";
   }
   return "http://localhost:8080";
 };
