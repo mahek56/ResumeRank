@@ -195,17 +195,14 @@ public class CandidateService {
 
     @Transactional
     protected Score persistScore(Candidate candidate, AiScoreResponse result) {
-        String matchedJson = toJson(result.getMatchedSkills());
-        String missingJson = toJson(result.getMissingSkills());
-
         Score score = new Score(
                 candidate,
                 result.getCompositeScore(),
                 result.getSemanticScore(),
                 result.getKeywordScore(),
                 result.getScoringMethod() != null ? result.getScoringMethod() : "tfidf",
-                matchedJson,
-                missingJson
+                result.getMatchedSkills() != null ? result.getMatchedSkills() : List.of(),
+                result.getMissingSkills() != null ? result.getMissingSkills() : List.of()
         );
         // Update matched flag on CandidateSkill rows
         Set<String> matchedSet = result.getMatchedSkills() != null
@@ -357,26 +354,11 @@ public class CandidateService {
             r.setSemanticScore(score.getSemanticScore());
             r.setKeywordScore(score.getKeywordScore());
             r.setScoringMethod(score.getScoringMethod());
-            r.setMatchedSkills(fromJson(score.getMatchedSkills()));
-            r.setMissingSkills(fromJson(score.getMissingSkills()));
+            r.setMatchedSkills(score.getMatchedSkills());
+            r.setMissingSkills(score.getMissingSkills());
         }
         return r;
     }
 
-    private String toJson(List<String> list) {
-        try {
-            return objectMapper.writeValueAsString(list != null ? list : List.of());
-        } catch (Exception e) {
-            return "[]";
-        }
-    }
 
-    private List<String> fromJson(String json) {
-        try {
-            if (json == null || json.isBlank()) return List.of();
-            return Arrays.asList(objectMapper.readValue(json, String[].class));
-        } catch (Exception e) {
-            return List.of();
-        }
-    }
 }

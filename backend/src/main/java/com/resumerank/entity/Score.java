@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -44,11 +45,11 @@ public class Score {
 
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(name = "matched_skills", nullable = false, columnDefinition = "JSONB")
-    private String matchedSkills = "[]";
+    private List<String> matchedSkills = List.of();
 
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(name = "missing_skills", nullable = false, columnDefinition = "JSONB")
-    private String missingSkills = "[]";
+    private List<String> missingSkills = List.of();
 
     @Column(name = "computed_at", nullable = false)
     private OffsetDateTime computedAt;
@@ -57,7 +58,7 @@ public class Score {
 
     public Score(Candidate candidate, float compositeScore, float semanticScore,
                  float keywordScore, String scoringMethod,
-                 String matchedSkills, String missingSkills) {
+                 List<String> matchedSkills, List<String> missingSkills) {
         this.candidate = candidate;
         this.compositeScore = compositeScore;
         this.semanticScore = semanticScore;
@@ -76,7 +77,7 @@ public class Score {
     public float getSemanticScore() { return semanticScore; }
     public float getKeywordScore() { return keywordScore; }
     public String getScoringMethod() { return scoringMethod; }
-    public String getMatchedSkills() { return matchedSkills; }
-    public String getMissingSkills() { return missingSkills; }
+    public List<String> getMatchedSkills() { return matchedSkills; }
+    public List<String> getMissingSkills() { return missingSkills; }
     public OffsetDateTime getComputedAt() { return computedAt; }
 }
