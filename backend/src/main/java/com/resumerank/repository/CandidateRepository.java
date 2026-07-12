@@ -31,7 +31,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
           AND (:hasSearch = false
                OR LOWER(c.name)  LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')))
-          AND (:hasStatus = false OR c.status = :status)
+          AND (:hasStatus = false OR CAST(c.status AS string) = CAST(:status AS string))
         """,
         countQuery = """
         SELECT count(c) FROM Candidate c
@@ -39,7 +39,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
           AND (:hasSearch = false
                OR LOWER(c.name)  LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')))
-          AND (:hasStatus = false OR c.status = :status)
+          AND (:hasStatus = false OR CAST(c.status AS string) = CAST(:status AS string))
         """)
     Page<Candidate> findByJobIdFiltered(
             @Param("jobId") UUID jobId,
@@ -56,7 +56,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
         SELECT c FROM Candidate c
         LEFT JOIN c.score s
         WHERE c.job.id = :jobId
-          AND (:status IS NULL OR c.status = :status)
+          AND (:status IS NULL OR CAST(c.status AS string) = CAST(:status AS string))
         ORDER BY s.compositeScore DESC NULLS LAST
         """)
     List<Candidate> findByJobIdForExport(
