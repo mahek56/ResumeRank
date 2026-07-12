@@ -17,15 +17,13 @@ public class RegisterRequest {
     @Size(min = 8, max = 128, message = "Password must be 8–128 characters")
     private String password;
 
-    @NotBlank(message = "Password confirmation is required")
-    private String confirmPassword;
+
 
     public RegisterRequest() {}
 
-    public RegisterRequest(String email, String password, String confirmPassword) {
+    public RegisterRequest(String email, String password) {
         this.email = email;
         this.password = password;
-        this.confirmPassword = confirmPassword;
     }
 
     public String getEmail() { return email; }
@@ -34,6 +32,5 @@ public class RegisterRequest {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public String getConfirmPassword() { return confirmPassword; }
-    public void setConfirmPassword(String confirmPassword) { this.confirmPassword = confirmPassword; }
+
 }

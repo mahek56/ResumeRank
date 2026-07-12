@@ -49,10 +49,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request,
                                                  HttpServletResponse response) {
-        // Password confirmation check
-        if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new ValidationException("Passwords do not match");
-        }
 
         // Duplicate email check
         if (userRepository.existsByEmail(request.getEmail().toLowerCase())) {
