@@ -59,16 +59,15 @@ public class SecurityConfig {
             // CookieCsrfTokenRepository writes XSRF-TOKEN cookie (JS-readable).
             // Frontend reads it and sends it back as X-XSRF-TOKEN header.
             .csrf(csrf -> csrf
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(csrfHandler)
-                .ignoringRequestMatchers("/auth/**"))
+    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+    .csrfTokenRequestHandler(csrfHandler)
+    .ignoringRequestMatchers("/api/auth/**"))
 
             // -- Authorization rules --
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/health").permitAll()
-                .anyRequest().authenticated())
-
+    .requestMatchers("/api/auth/**").permitAll()
+    .requestMatchers(HttpMethod.GET, "/health").permitAll()
+    .anyRequest().authenticated())
             // -- Custom JWT filter before UsernamePasswordAuthenticationFilter --
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 
