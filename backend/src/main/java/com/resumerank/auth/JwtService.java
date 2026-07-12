@@ -93,7 +93,7 @@ public class JwtService {
         ResponseCookie cookie = ResponseCookie.from(cookieName, token)
                 .httpOnly(true)
                 .secure(cookieSecure)
-                .sameSite("Lax")
+                .sameSite("None")
                 .path("/")
                 .maxAge(expirationMs / 1000)
                 .build();
@@ -107,7 +107,7 @@ public class JwtService {
         ResponseCookie cookie = ResponseCookie.from(cookieName, "")
                 .httpOnly(true)
                 .secure(cookieSecure)
-                .sameSite("Lax")
+                .sameSite("None")
                 .path("/")
                 .maxAge(0)
                 .build();
