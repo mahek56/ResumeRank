@@ -94,6 +94,17 @@ public class JobService {
     }
 
     /**
+     * Load a Job by ID and initialize its skills collection to prevent
+     * LazyInitializationException outside of transactional contexts.
+     */
+    @Transactional(readOnly = true)
+    public Job getJobWithSkillsOrThrow(UUID jobId) {
+        Job job = getJobOrThrow(jobId);
+        job.getSkills().size(); // Initialize lazy collection
+        return job;
+    }
+
+    /**
      * Assert the current user owns the job or throw ForbiddenException.
      */
     public void assertOwner(Job job, User currentUser) {

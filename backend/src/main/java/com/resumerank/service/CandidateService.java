@@ -101,7 +101,7 @@ public class CandidateService {
                                               String candidateEmail,
                                               User actor) {
         // Step 1 — verify job exists and actor owns it
-        Job job = jobService.getJobOrThrow(jobId);
+        Job job = jobService.getJobWithSkillsOrThrow(jobId);
         jobService.assertOwner(job, actor);
 
         // Step 2 — read bytes once (InputStream can only be consumed once)
