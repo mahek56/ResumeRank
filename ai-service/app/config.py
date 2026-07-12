@@ -27,5 +27,5 @@ settings = Settings()
 # Use on Render free tier (<512 MB) or any memory-constrained environment.
 # ---------------------------------------------------------------------------
 DISABLE_SENTENCE_TRANSFORMERS: bool = (
-    os.getenv("DISABLE_SENTENCE_TRANSFORMERS", "false").strip().lower() == "true"
+    os.getenv("DISABLE_SENTENCE_TRANSFORMERS", "true").strip().lower() == "true"
 )

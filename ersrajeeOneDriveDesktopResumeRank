@@ -1,0 +1,217 @@
+[33mcommit e2ebe0b9ed7e9b968d97b022c0453c1740e1d6cb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 18:25:06 2026 +0530
+
+    Fix 500 error: Change Pageable sort to use JpaSort to avoid Hibernate implicit join conflict with explicit join
+
+[33mcommit 033895359a28f7fece9fbd316d651cd79dc6a149[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 17:54:34 2026 +0530
+
+    Fix Postgres null parameter issue in candidates pagination query
+
+[33mcommit f9677a7276c25f7504d01970028e2fcbdfc5e4bf[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 15:57:36 2026 +0530
+
+    Fix candidate loading and resume upload 500 errors
+
+[33mcommit 2e5d2d28cc6f5d34cb2840fad3ee330503de8b84[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 15:33:14 2026 +0530
+
+    fix: annotate JSONB fields with @JdbcTypeCode for Hibernate 6 PostgreSQL compatibility
+
+[33mcommit dac2c3a8f00804df514b8ef0fd30fb3cb5d8c7a3[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 15:29:04 2026 +0530
+
+    feat: check all JPA tables in health check
+
+[33mcommit 33df634de3e8e8a6c5a804a19bc52258fd8fdf8d[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 15:07:28 2026 +0530
+
+    feat: enhance health check to query users table for validation
+
+[33mcommit e0b35a043b4eb5cae4b441081c63ce8237bd5607[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 14:59:21 2026 +0530
+
+    feat: add mapped /health endpoint that pings the database
+
+[33mcommit c4f93816fe787ae6f3f9a0d02edcac705d272435[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 14:39:52 2026 +0530
+
+    fix: add Hikari and Flyway connection retry/timeout config for Neon cold-start delays
+
+[33mcommit 12a7060ef8108e6a968fea0ad68390a2e0d4987e[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 14:18:11 2026 +0530
+
+    fix: add CSRF token header injection in frontend, explicit cookie path for proxy compatibility
+
+[33mcommit 86ac8ad165bdb15f266caab9b8a0450aa7788383[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 13:54:26 2026 +0530
+
+    fix: proxy API calls through Next.js rewrites to make auth cookie first-party (fixes cross-domain cookie blocking)
+
+[33mcommit fdc448059245e3c41f504c20cb6cc225deba0e66[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 13:42:32 2026 +0530
+
+    fix: hardcode Secure=true on JWT and CSRF cookies for cross-domain (SameSite=None requires Secure)
+
+[33mcommit fa73262f4807410907be578aebbf5b7e8498d285[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 13:23:50 2026 +0530
+
+    fix: change JWT cookie SameSite from Lax to None for cross-domain auth (Vercel frontend + Render backend)
+
+[33mcommit a95a3bbf02fb09bed72c9004a79be9a2b9f532ee[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 12:54:24 2026 +0530
+
+    fix: remove confirmPassword requirement causing registration validation failure
+
+[33mcommit ad66950a5a12c89b1a92ba8f44dc03bb534d4e0a[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 12:42:36 2026 +0530
+
+    fix: prevent 401 redirect loop from swallowing login error on login page itself
+
+[33mcommit 12b6d62744b44a55798d2b2af017ef79b9c3146a[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 09:16:55 2026 +0530
+
+    fix: prevent mixed-content fetch failure when NEXT_PUBLIC_API_URL missing, surface swallowed login errors
+
+[33mcommit a426a2847657083ec50daaabae5f250d5fcca5bf[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 08:20:05 2026 +0530
+
+    fix: add missing /api prefix to AuthController mapping (was causing 404/500 on login)
+
+[33mcommit 31f8972f56eda42d38ef2b85b03dcd2d280afcde[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sun Jul 12 08:02:58 2026 +0530
+
+    fix: correct CSRF/auth path matchers to include /api prefix (was blocking login with 403)
+
+[33mcommit 1be1e53831d67050bcc221279daf73fa9982df77[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 21:21:33 2026 +0530
+
+    fix: reorder Dockerfile so mkdir/chown run before USER switch (permission fix)
+
+[33mcommit 83342fa8228e59179dd98c7c56aa065a0356eb06[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 21:03:23 2026 +0530
+
+    docs: session 12 notes
+
+[33mcommit db953885c2d240cf68599f07ba2b735f2e959e21[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 21:02:11 2026 +0530
+
+    fix: add DISABLE_SENTENCE_TRANSFORMERS flag to skip torch import at startup (Render free tier OOM fix), fix useSearchParams Suspense boundary in login page
+
+[33mcommit c2a712cd2f3c01c22a39e0a6459d4dbff545937f[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 20:56:14 2026 +0530
+
+    fix: wrap useSearchParams in Suspense boundary (Next.js build requirement)
+
+[33mcommit ef4469ace87c6bfe66f0143b96ae7722463419d0[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 20:35:14 2026 +0530
+
+    fix: fully regenerate package-lock.json from scratch
+
+[33mcommit 8c41f649c5a1ee2ae6091832eed3d3904571c608[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 20:26:04 2026 +0530
+
+    fix: regenerate package-lock.json, fix npm ci flag
+
+[33mcommit e377da5b071aad5f37c70a76d26562c50fb2e9ac[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 20:21:00 2026 +0530
+
+    fix: remove invalid --frozen-lockfile flag from npm ci (yarn syntax, not npm)
+
+[33mcommit b6826883a4f989de465a3d8106785168bb42f723[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 19:51:38 2026 +0530
+
+    feat: phases 8/9/10 complete - dashboard, landing SEO, seed data, Dockerfiles
+
+[33mcommit 6d0c586bd3dcf8c272fff71b1f665e86f821ef35[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 19:42:46 2026 +0530
+
+    docs: session 11 notes
+
+[33mcommit 2adab2d328f0e7752565d1cd277357003a05af16[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 19:41:31 2026 +0530
+
+    feat: phase 8 partial — jobs list page, job detail/candidates page
+
+[33mcommit 0750956c31bf19d6681eae06b0588940ff25342a[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 13:32:55 2026 +0530
+
+    docs: session 10 notes
+
+[33mcommit 03811bd57e7d2f0b79a3510f79f3e99a174a84d4[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 13:32:20 2026 +0530
+
+    feat: phase 7 partial — types, api.ts, hooks (useAuth/useJobs/useCandidates/useDashboard), middleware, UI component library (Button through EmptyState)
+
+[33mcommit 8d1e555442db8e49a12f3ec122eb8e435c6aa375[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 13:14:58 2026 +0530
+
+    docs: session 9 notes — E2E fully deferred, moving to frontend
+
+[33mcommit 1542e1170d444049e3dd3676d9ab12b327e5fc1c[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 13:14:24 2026 +0530
+
+    feat: phase 6 complete — dashboard (compile clean, 57 files), E2E testing deferred to deployment
+
+[33mcommit faddebf6be7bd7e120527fb9009925e80c3dcbe9[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 13:07:19 2026 +0530
+
+    docs: session 8 notes — decided to skip local Docker E2E, defer to deployment
+
+[33mcommit ca9d596b6bdf48ab3846e33e2ea8cee70dc99e1a[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 13:06:24 2026 +0530
+
+    feat: phase 6 complete — DashboardResponse, DashboardRepository, DashboardService, DashboardController (compile clean, 57 files)
+
+[33mcommit f1e520a8ca6620ca5bffe71b9dd0d8741cdcd6ef[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 12:58:01 2026 +0530
+
+    chore: phase 5 verified (compile clean), Docker Desktop launch attempted, Phase 6 scoped
+
+[33mcommit 948a2fdc3515b2dccaeba0d2cb319c1dedb545fe[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 12:26:40 2026 +0530
+
+    feat: phase 5 partial — StorageService, AiServiceClient, CandidateService, CandidateController (repos + DTOs done, bug fixes applied)
+
+[33mcommit 925b9e2ddccbcae425aeb62fde95e5f94d7f099d[m
+Author: mahek <mahekksingh56@gmail.com>
+Date:   Sat Jul 11 11:44:55 2026 +0530
+
+    docs: session 5 notes + decision summary (docs/my-notes.md)
+
+[33mcommit 2e239560161fe9a61d9a6eb3b04bd2f5e82a41b
