@@ -153,8 +153,13 @@ public class CandidateService {
         } catch (Exception e) {
             log.error("Scoring failed for candidate {}: {}", candidate.getId(), e.getMessage());
             // Candidate is persisted; return partial response without score
-            auditService.log("Candidate", candidate.getId(), "UPLOADED_SCORE_FAILED", actor,
-                    "{\"error\":\"" + e.getMessage() + "\"}");
+            String meta = "{\"error\":\"Unknown error\"}";
+            try {
+                meta = "{\"error\":" + objectMapper.writeValueAsString(e.getMessage()) + "}";
+            } catch (Exception ex) {
+                // fallback if serialization fails
+            }
+            auditService.log("Candidate", candidate.getId(), "UPLOADED_SCORE_FAILED", actor, meta);
             return toResponse(candidate, null);
         }
 
