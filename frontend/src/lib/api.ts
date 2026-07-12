@@ -64,6 +64,12 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 // ---- Core request helpers ----
 
+function getCsrfToken(): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(new RegExp("(^| )XSRF-TOKEN=([^;]+)"));
+  return match ? decodeURIComponent(match[2]) : undefined;
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "GET",
@@ -74,40 +80,54 @@ async function get<T>(path: string): Promise<T> {
 }
 
 async function post<T>(path: string, body?: unknown): Promise<T> {
+  const csrfToken = getCsrfToken();
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      ...(csrfToken ? { "X-XSRF-TOKEN": csrfToken } : {})
+    },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
   return handleResponse<T>(res);
 }
 
 async function postForm<T>(path: string, formData: FormData): Promise<T> {
+  const csrfToken = getCsrfToken();
   // Don't set Content-Type — browser sets it with the correct boundary for multipart
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
     credentials: "include",
+    headers: csrfToken ? { "X-XSRF-TOKEN": csrfToken } : undefined,
     body: formData,
   });
   return handleResponse<T>(res);
 }
 
 async function patch<T>(path: string, body?: unknown): Promise<T> {
+  const csrfToken = getCsrfToken();
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "PATCH",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      ...(csrfToken ? { "X-XSRF-TOKEN": csrfToken } : {})
+    },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
   return handleResponse<T>(res);
 }
 
 async function del<T>(path: string): Promise<T> {
+  const csrfToken = getCsrfToken();
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "DELETE",
     credentials: "include",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      ...(csrfToken ? { "X-XSRF-TOKEN": csrfToken } : {})
+    },
   });
   return handleResponse<T>(res);
 }

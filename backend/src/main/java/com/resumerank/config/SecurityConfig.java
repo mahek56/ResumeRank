@@ -60,7 +60,7 @@ public class SecurityConfig {
             // Frontend reads it and sends it back as X-XSRF-TOKEN header.
             .csrf(csrf -> {
                 CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
-                repo.setCookieCustomizer(cookie -> cookie.sameSite("None").secure(true));
+                repo.setCookieCustomizer(cookie -> cookie.sameSite("None").secure(true).path("/"));
                 csrf.csrfTokenRepository(repo)
                     .csrfTokenRequestHandler(csrfHandler)
                     .ignoringRequestMatchers("/api/auth/**");
