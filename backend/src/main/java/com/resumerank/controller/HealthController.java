@@ -13,9 +13,11 @@ import java.util.Map;
 public class HealthController {
 
     private final DataSource dataSource;
+    private final com.resumerank.repository.UserRepository userRepository;
 
-    public HealthController(DataSource dataSource) {
+    public HealthController(DataSource dataSource, com.resumerank.repository.UserRepository userRepository) {
         this.dataSource = dataSource;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/health")
@@ -23,7 +25,13 @@ public class HealthController {
         try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute("SELECT 1");
-            return ResponseEntity.ok(Map.of("status", "UP", "database", "CONNECTED"));
+            long userCount = userRepository.count();
+            return ResponseEntity.ok(Map.of(
+                    "status", "UP", 
+                    "database", "CONNECTED",
+                    "userTable", "EXISTS",
+                    "usersCount", userCount
+            ));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of(
                     "status", "DOWN",
