@@ -130,11 +130,21 @@ public class CandidateService {
             throw new RuntimeException("Resume parsing failed — file removed. " + e.getMessage(), e);
         }
 
+        if (parsed.getRawText() == null || parsed.getRawText().trim().isEmpty()) {
+            storageService.delete(filePath);
+            auditService.log("Job", jobId, "CANDIDATE_UPLOAD_FAILED", actor, "{\"error\":\"Empty resume text extracted\"}");
+            throw new ValidationException("The uploaded resume contains no readable text. Please upload a text-based PDF, not an image-only scan.");
+        }
+
         // Step 4 — persist Candidate + CandidateSkills
         Candidate candidate = persistCandidate(job, candidateName, candidateEmail,
                 filePath, parsed);
 
         // Step 5 — build score request from parsed data + job
+        if (job.getDescription() == null || job.getDescription().trim().isEmpty()) {
+            throw new ValidationException("The job description is empty. Cannot score candidate against an empty job description.");
+        }
+
         List<AiScoreRequest.SkillWeight> jobSkills = job.getSkills().stream()
                 .map(s -> new AiScoreRequest.SkillWeight(s.getName(), s.getWeight()))
                 .collect(Collectors.toList());
