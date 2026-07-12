@@ -8,12 +8,16 @@ spring:
     url: ${DATABASE_URL}
     hikari:
       maximum-pool-size: 5
+      connection-timeout: 60000          # Wait up to 60s for Neon to wake up
+      initialization-fail-timeout: 60000 # Wait/retry up to 60s during startup
 
   jpa:
     show-sql: false
 
   flyway:
     baseline-on-migrate: false
+    connect-retries: 10                  # Allow Flyway to retry connecting
+    connect-retries-interval: 5          # Wait 5 seconds between retries (total 50s)
 
 server:
   error:
