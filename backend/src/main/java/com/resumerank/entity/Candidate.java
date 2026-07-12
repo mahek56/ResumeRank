@@ -53,6 +53,7 @@ public class Candidate {
     private String education;
 
     @Enumerated(EnumType.STRING)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     @Column(name = "status", nullable = false, columnDefinition = "candidate_status")
     private CandidateStatus status = CandidateStatus.PENDING;
 
