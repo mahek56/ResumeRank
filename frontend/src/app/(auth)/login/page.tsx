@@ -27,7 +27,8 @@ function LoginForm() {
     try {
       await login({ email, password });
       router.replace(nextPath);
-    } catch {
+    } catch (err) {
+      console.error("Login form submission failed:", err);
       // error displayed via state
     }
   };

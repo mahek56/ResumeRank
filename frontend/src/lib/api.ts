@@ -9,8 +9,18 @@
 
 import type { ApiError } from "./types";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const getBaseUrl = () => {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && envUrl !== "undefined" && envUrl !== "") {
+    return envUrl.replace(/\/+$/, "");
+  }
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost") {
+    return "";
+  }
+  return "http://localhost:8080";
+};
+
+const BASE_URL = getBaseUrl();
 
 class ApiClientError extends Error {
   status: number;
