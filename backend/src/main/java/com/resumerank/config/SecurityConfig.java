@@ -58,10 +58,13 @@ public class SecurityConfig {
             // -- CSRF: double-submit cookie pattern --
             // CookieCsrfTokenRepository writes XSRF-TOKEN cookie (JS-readable).
             // Frontend reads it and sends it back as X-XSRF-TOKEN header.
-            .csrf(csrf -> csrf
-    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-    .csrfTokenRequestHandler(csrfHandler)
-    .ignoringRequestMatchers("/api/auth/**"))
+            .csrf(csrf -> {
+                CookieCsrfTokenRepository repo = CookieCsrfTokenRepository.withHttpOnlyFalse();
+                repo.setCookieCustomizer(cookie -> cookie.sameSite("None").secure(true));
+                csrf.csrfTokenRepository(repo)
+                    .csrfTokenRequestHandler(csrfHandler)
+                    .ignoringRequestMatchers("/api/auth/**");
+            })
 
             // -- Authorization rules --
             .authorizeHttpRequests(auth -> auth

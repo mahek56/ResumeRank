@@ -92,7 +92,7 @@ public class JwtService {
     public void setTokenCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from(cookieName, token)
                 .httpOnly(true)
-                .secure(cookieSecure)
+                .secure(true) // SameSite=None requires Secure=true
                 .sameSite("None")
                 .path("/")
                 .maxAge(expirationMs / 1000)
@@ -106,7 +106,7 @@ public class JwtService {
     public void clearTokenCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from(cookieName, "")
                 .httpOnly(true)
-                .secure(cookieSecure)
+                .secure(true) // SameSite=None requires Secure=true
                 .sameSite("None")
                 .path("/")
                 .maxAge(0)
