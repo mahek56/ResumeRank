@@ -142,23 +142,20 @@ public class DashboardService {
     // -------------------------------------------------------------------------
 
     private List<DashboardResponse.MissingSkillEntry> buildTopMissingSkills(UUID jobId) {
-        List<String> jsonRows = dashboardRepository.allMissingSkillsJson(jobId);
-        if (jsonRows == null || jsonRows.isEmpty()) {
+        List<List<String>> skillLists = dashboardRepository.allMissingSkills(jobId);
+        if (skillLists == null || skillLists.isEmpty()) {
             return List.of();
         }
 
         Map<String, Long> freq = new HashMap<>();
-        for (String json : jsonRows) {
-            try {
-                String[] skills = objectMapper.readValue(json, String[].class);
+        for (List<String> skills : skillLists) {
+            if (skills != null) {
                 for (String skill : skills) {
                     if (skill != null && !skill.isBlank()) {
                         String key = skill.trim().toLowerCase();
                         freq.merge(key, 1L, Long::sum);
                     }
                 }
-            } catch (Exception e) {
-                log.warn("Failed to parse missing_skills JSON: {}", e.getMessage());
             }
         }
 

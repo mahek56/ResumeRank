@@ -115,16 +115,11 @@ public interface DashboardRepository extends JpaRepository<Score, UUID> {
     // Missing skills — raw JSONB returned as strings for Java-side aggregation
     // -------------------------------------------------------------------------
 
-    /**
-     * Return the raw missing_skills JSONB strings for all scored candidates
-     * in a job. Java parses each JSON array and tallies skill frequencies.
-     */
     @Query("""
         SELECT s.missingSkills
         FROM Score s
         WHERE s.candidate.job.id = :jobId
           AND s.missingSkills IS NOT NULL
-          AND s.missingSkills <> '[]'
         """)
-    List<String> allMissingSkillsJson(@Param("jobId") UUID jobId);
+    List<List<String>> allMissingSkills(@Param("jobId") UUID jobId);
 }
