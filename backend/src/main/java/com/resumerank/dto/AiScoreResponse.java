@@ -2,9 +2,13 @@ package com.resumerank.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * Response from FastAPI POST /score.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AiScoreResponse {
 
     private float compositeScore;

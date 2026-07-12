@@ -2,9 +2,13 @@ package com.resumerank.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * Request body for FastAPI POST /score.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class AiScoreRequest {
 
     private String jobDescription;
@@ -36,6 +40,7 @@ public class AiScoreRequest {
 
     // --- Nested DTO ---
 
+    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class SkillWeight {
         private String name;
         private float weight;
