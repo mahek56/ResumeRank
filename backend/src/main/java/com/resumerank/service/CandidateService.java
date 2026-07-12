@@ -118,57 +118,59 @@ public class CandidateService {
         log.debug("Stored resume at: {}", filePath);
 
         // Step 3 — call AI parse
-        ParseResponse parsed;
+        ParseResponse parsed = new ParseResponse();
+        boolean parsingFailed = false;
         try {
             parsed = aiServiceClient.parseResume(
                     file.getOriginalFilename() != null ? file.getOriginalFilename() : "resume.pdf",
                     pdfBytes
             );
+            if (parsed.getRawText() == null || parsed.getRawText().trim().isEmpty()) {
+                parsingFailed = true;
+                parsed.setRawText("");
+            }
         } catch (Exception e) {
-            // Clean up stored file on parse failure
-            storageService.delete(filePath);
-            throw new RuntimeException("Resume parsing failed — file removed. " + e.getMessage(), e);
+            log.error("Resume parsing failed for {}: {}", filePath, e.getMessage());
+            parsingFailed = true;
         }
 
-        if (parsed.getRawText() == null || parsed.getRawText().trim().isEmpty()) {
-            storageService.delete(filePath);
-            auditService.log("Job", jobId, "CANDIDATE_UPLOAD_FAILED", actor, "{\"error\":\"Empty resume text extracted\"}");
-            throw new ValidationException("The uploaded resume contains no readable text. Please upload a text-based PDF, not an image-only scan.");
-        }
-
-        // Step 4 — persist Candidate + CandidateSkills
+        // Step 4 — persist Candidate + CandidateSkills (we always save the candidate)
         Candidate candidate = persistCandidate(job, candidateName, candidateEmail,
                 filePath, parsed);
 
-        // Step 5 — build score request from parsed data + job
-        if (job.getDescription() == null || job.getDescription().trim().isEmpty()) {
-            throw new ValidationException("The job description is empty. Cannot score candidate against an empty job description.");
+        // Step 5 — build and execute score request if parsing succeeded
+        boolean scoringFailed = parsingFailed;
+        AiScoreResponse scoreResult = null;
+
+        if (!scoringFailed) {
+            try {
+                if (job.getDescription() == null || job.getDescription().trim().isEmpty()) {
+                    throw new RuntimeException("Job description is empty. Cannot score.");
+                }
+
+                List<AiScoreRequest.SkillWeight> jobSkills = job.getSkills().stream()
+                        .map(s -> new AiScoreRequest.SkillWeight(s.getName(), s.getWeight()))
+                        .collect(Collectors.toList());
+
+                AiScoreRequest scoreRequest = new AiScoreRequest(
+                        job.getDescription(),
+                        jobSkills,
+                        parsed.getRawText() != null ? parsed.getRawText() : "",
+                        parsed.getSkills() != null ? parsed.getSkills() : List.of()
+                );
+
+                scoreResult = aiServiceClient.scoreCandidate(scoreRequest);
+            } catch (Exception e) {
+                log.error("Scoring failed for candidate {}: {}", candidate.getId(), e.getMessage());
+                scoringFailed = true;
+            }
         }
 
-        List<AiScoreRequest.SkillWeight> jobSkills = job.getSkills().stream()
-                .map(s -> new AiScoreRequest.SkillWeight(s.getName(), s.getWeight()))
-                .collect(Collectors.toList());
-
-        AiScoreRequest scoreRequest = new AiScoreRequest(
-                job.getDescription(),
-                jobSkills,
-                parsed.getRawText() != null ? parsed.getRawText() : "",
-                parsed.getSkills() != null ? parsed.getSkills() : List.of()
-        );
-
-        // Step 6 — call AI score
-        AiScoreResponse scoreResult;
-        try {
-            scoreResult = aiServiceClient.scoreCandidate(scoreRequest);
-        } catch (Exception e) {
-            log.error("Scoring failed for candidate {}: {}", candidate.getId(), e.getMessage());
-            // Candidate is persisted; return partial response without score
-            String meta = "{\"error\":\"Unknown error\"}";
+        if (scoringFailed) {
+            String meta = "{\"status\":\"scoring_unavailable\"}";
             try {
-                meta = "{\"error\":" + objectMapper.writeValueAsString(e.getMessage()) + "}";
-            } catch (Exception ex) {
-                // fallback if serialization fails
-            }
+                meta = objectMapper.writeValueAsString(java.util.Map.of("status", "scoring_unavailable"));
+            } catch (Exception ignored) {}
             auditService.log("Candidate", candidate.getId(), "UPLOADED_SCORE_FAILED", actor, meta);
             return toResponse(candidate, null);
         }
