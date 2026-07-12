@@ -33,8 +33,8 @@ class ApiClientError extends Error {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (res.status === 401) {
-    // Only redirect on the client side
-    if (typeof window !== "undefined") {
+    // Only redirect on the client side if not already on the login page
+    if (typeof window !== "undefined" && window.location.pathname !== "/login") {
       window.location.href = "/login";
     }
     throw new ApiClientError("Unauthorized", 401);
