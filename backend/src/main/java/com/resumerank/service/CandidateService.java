@@ -238,7 +238,7 @@ public class CandidateService {
         boolean hasSearch = search != null && !search.isBlank();
         String safeSearch = hasSearch ? search.trim() : "";
         boolean hasStatus = status != null;
-        CandidateStatus safeStatus = hasStatus ? status : CandidateStatus.PENDING;
+        CandidateStatus safeStatus = hasStatus ? status : CandidateStatus.pending;
 
         Page<Candidate> page = candidateRepository.findByJobIdFiltered(
                 jobId, hasSearch, safeSearch, hasStatus, safeStatus, pageable);

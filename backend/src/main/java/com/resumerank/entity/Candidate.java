@@ -55,7 +55,7 @@ public class Candidate {
     @Enumerated(EnumType.STRING)
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.NAMED_ENUM)
     @Column(name = "status", nullable = false, columnDefinition = "candidate_status")
-    private CandidateStatus status = CandidateStatus.PENDING;
+    private CandidateStatus status = CandidateStatus.pending;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -69,7 +69,7 @@ public class Candidate {
         this.job = job;
         this.name = name;
         this.resumeFileUrl = resumeFileUrl;
-        this.status = CandidateStatus.PENDING;
+        this.status = CandidateStatus.pending;
         this.createdAt = OffsetDateTime.now();
     }
 

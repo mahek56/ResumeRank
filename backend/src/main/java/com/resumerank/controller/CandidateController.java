@@ -222,7 +222,7 @@ public class CandidateController {
     private CandidateStatus parseStatus(String s) {
         if (s == null || s.isBlank()) return null;
         try {
-            return CandidateStatus.valueOf(s.toUpperCase());
+            return CandidateStatus.valueOf(s.toLowerCase());
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Invalid status value: " + s + ". Valid: pending, shortlisted, rejected");
         }

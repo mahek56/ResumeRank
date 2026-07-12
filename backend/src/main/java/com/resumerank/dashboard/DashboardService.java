@@ -131,9 +131,9 @@ public class DashboardService {
     // -------------------------------------------------------------------------
 
     private DashboardResponse.StatusFunnel buildStatusFunnel(UUID jobId) {
-        long pending     = dashboardRepository.countByStatus(jobId, CandidateStatus.PENDING);
-        long shortlisted = dashboardRepository.countByStatus(jobId, CandidateStatus.SHORTLISTED);
-        long rejected    = dashboardRepository.countByStatus(jobId, CandidateStatus.REJECTED);
+        long pending     = dashboardRepository.countByStatus(jobId, CandidateStatus.pending);
+        long shortlisted = dashboardRepository.countByStatus(jobId, CandidateStatus.shortlisted);
+        long rejected    = dashboardRepository.countByStatus(jobId, CandidateStatus.rejected);
         return new DashboardResponse.StatusFunnel(pending, shortlisted, rejected);
     }
 

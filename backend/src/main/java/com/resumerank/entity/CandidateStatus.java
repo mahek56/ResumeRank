@@ -4,9 +4,9 @@ package com.resumerank.entity;
  * Maps to PostgreSQL enum type 'candidate_status' created in V3 migration.
  */
 public enum CandidateStatus {
-    PENDING,
-    SHORTLISTED,
-    REJECTED;
+    pending,
+    shortlisted,
+    rejected;
 
     /**
      * Converts to the lowercase value stored in PostgreSQL.
@@ -19,6 +19,6 @@ public enum CandidateStatus {
      * Parses from the lowercase PostgreSQL value.
      */
     public static CandidateStatus fromDbValue(String value) {
-        return valueOf(value.toUpperCase());
+        return valueOf(value.toLowerCase());
     }
 }
