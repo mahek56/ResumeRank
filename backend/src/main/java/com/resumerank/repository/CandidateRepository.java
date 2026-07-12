@@ -24,18 +24,28 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
      * Joined to scores for composite_score-based sorting — scores.candidate_id
      * may be null (LEFT JOIN) if scoring hasn't completed.
      */
-    @Query("""
+    @Query(value = """
         SELECT c FROM Candidate c
         LEFT JOIN c.score s
         WHERE c.job.id = :jobId
-          AND (:search IS NULL
+          AND (:hasSearch = false
                OR LOWER(c.name)  LIKE LOWER(CONCAT('%', :search, '%'))
                OR LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')))
-          AND (:status IS NULL OR c.status = :status)
+          AND (:hasStatus = false OR c.status = :status)
+        """,
+        countQuery = """
+        SELECT count(c) FROM Candidate c
+        WHERE c.job.id = :jobId
+          AND (:hasSearch = false
+               OR LOWER(c.name)  LIKE LOWER(CONCAT('%', :search, '%'))
+               OR LOWER(c.email) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND (:hasStatus = false OR c.status = :status)
         """)
     Page<Candidate> findByJobIdFiltered(
             @Param("jobId") UUID jobId,
+            @Param("hasSearch") boolean hasSearch,
             @Param("search") String search,
+            @Param("hasStatus") boolean hasStatus,
             @Param("status") CandidateStatus status,
             Pageable pageable);
 

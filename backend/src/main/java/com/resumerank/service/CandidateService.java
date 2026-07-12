@@ -235,10 +235,13 @@ public class CandidateService {
         Job job = jobService.getJobOrThrow(jobId);
         jobService.assertOwner(job, actor);
 
-        String searchParam = (search != null && search.isBlank()) ? null : search;
+        boolean hasSearch = search != null && !search.isBlank();
+        String safeSearch = hasSearch ? search.trim() : "";
+        boolean hasStatus = status != null;
+        CandidateStatus safeStatus = hasStatus ? status : CandidateStatus.PENDING;
 
         Page<Candidate> page = candidateRepository.findByJobIdFiltered(
-                jobId, searchParam, status, pageable);
+                jobId, hasSearch, safeSearch, hasStatus, safeStatus, pageable);
 
         List<CandidateResponse> content = page.getContent().stream()
                 .map(c -> toResponse(c, scoreRepository.findByCandidateId(c.getId()).orElse(null)))
