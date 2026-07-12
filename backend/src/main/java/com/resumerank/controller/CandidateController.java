@@ -235,17 +235,18 @@ public class CandidateController {
     }
 
     private Pageable buildPageable(String sortField, String dir, int page, int size) {
-        // Allow-list sort fields — prevent arbitrary JPQL injection
+        // Allow-list sort fields — use explicit JPQL aliases 's' and 'c' defined in CandidateRepository
         String safeSort = switch (sortField.toLowerCase()) {
-            case "composite_score" -> "score.compositeScore";
-            case "name" -> "name";
-            case "created_at" -> "createdAt";
-            default -> "createdAt";
+            case "composite_score" -> "s.compositeScore";
+            case "name" -> "c.name";
+            case "created_at" -> "c.createdAt";
+            default -> "c.createdAt";
         };
         Sort.Direction direction = "asc".equalsIgnoreCase(dir)
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
-        // Secondary sort on id for stability
-        Sort sort = Sort.by(direction, safeSort).and(Sort.by(Sort.Direction.ASC, "id"));
+        // JpaSort allows bypassing property checks to use query aliases directly
+        Sort sort = org.springframework.data.jpa.domain.JpaSort.unsafe(direction, safeSort)
+                .and(org.springframework.data.jpa.domain.JpaSort.unsafe(Sort.Direction.ASC, "c.id"));
         return PageRequest.of(page, size, sort);
     }
 }
