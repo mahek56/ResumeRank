@@ -237,7 +237,7 @@ public class CandidateController {
     private Pageable buildPageable(String sortField, String dir, int page, int size) {
         // Allow-list sort fields — prevent arbitrary JPQL injection
         String safeSort = switch (sortField.toLowerCase()) {
-            case "composite_score" -> "compositeScore";
+            case "composite_score" -> "score.compositeScore";
             case "name" -> "name";
             case "created_at" -> "createdAt";
             default -> "createdAt";

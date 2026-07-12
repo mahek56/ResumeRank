@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -57,6 +58,9 @@ public class Candidate {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
+    @OneToOne(mappedBy = "candidate", fetch = FetchType.LAZY)
+    private Score score;
 
     protected Candidate() {}
 

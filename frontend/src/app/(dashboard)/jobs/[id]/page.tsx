@@ -163,6 +163,7 @@ function UploadModal({
       const fd = new FormData();
       fd.append("file", files[i]);
       fd.append("jobId", jobId);
+      fd.append("name", files[i].name.replace(/\.[^/.]+$/, ""));
       try {
         await api.candidates.upload(fd);
       } catch {

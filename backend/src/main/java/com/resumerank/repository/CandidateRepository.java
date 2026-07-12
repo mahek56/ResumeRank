@@ -26,7 +26,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
      */
     @Query("""
         SELECT c FROM Candidate c
-        LEFT JOIN Score s ON s.candidate = c
+        LEFT JOIN c.score s
         WHERE c.job.id = :jobId
           AND (:search IS NULL
                OR LOWER(c.name)  LIKE LOWER(CONCAT('%', :search, '%'))
@@ -44,7 +44,7 @@ public interface CandidateRepository extends JpaRepository<Candidate, UUID> {
      */
     @Query("""
         SELECT c FROM Candidate c
-        LEFT JOIN Score s ON s.candidate = c
+        LEFT JOIN c.score s
         WHERE c.job.id = :jobId
           AND (:status IS NULL OR c.status = :status)
         ORDER BY s.compositeScore DESC NULLS LAST
