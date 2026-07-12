@@ -39,6 +39,7 @@ public class AuditLog {
     @JoinColumn(name = "actor_id", nullable = false)
     private User actor;
 
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(name = "meta", columnDefinition = "JSONB")
     private String meta = "{}";
 

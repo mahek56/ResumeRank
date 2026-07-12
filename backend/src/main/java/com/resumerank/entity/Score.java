@@ -42,9 +42,11 @@ public class Score {
     @Column(name = "scoring_method", nullable = false, length = 50)
     private String scoringMethod = "sentence-transformers";
 
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(name = "matched_skills", nullable = false, columnDefinition = "JSONB")
     private String matchedSkills = "[]";
 
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(name = "missing_skills", nullable = false, columnDefinition = "JSONB")
     private String missingSkills = "[]";
 
