@@ -31,6 +31,10 @@ class ParseResponse(BaseModel):
         default=None,
         description="Highest detected education level / degree string",
     )
+    email: Optional[str] = Field(
+        default=None,
+        description="Extracted email address",
+    )
 
 
 # ---------------------------------------------------------------------------

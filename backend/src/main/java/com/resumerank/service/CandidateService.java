@@ -135,7 +135,11 @@ public class CandidateService {
         }
 
         // Step 4 — persist Candidate + CandidateSkills (we always save the candidate)
-        Candidate candidate = persistCandidate(job, candidateName, candidateEmail,
+        String finalEmail = candidateEmail;
+        if ((finalEmail == null || finalEmail.isBlank()) && parsed.getEmail() != null) {
+            finalEmail = parsed.getEmail();
+        }
+        Candidate candidate = persistCandidate(job, candidateName, finalEmail,
                 filePath, parsed);
 
         // Step 5 — build and execute score request if parsing succeeded

@@ -211,6 +211,16 @@ def extract_education(text: str, nlp=None) -> Optional[str]:
 
 
 # ---------------------------------------------------------------------------
+# Email extraction
+# ---------------------------------------------------------------------------
+
+def extract_email(text: str) -> Optional[str]:
+    """Extract email address using regex."""
+    match = re.search(r'[\w\.-]+@[\w\.-]+\.\w+', text)
+    return match.group(0) if match else None
+
+
+# ---------------------------------------------------------------------------
 # Public entry point
 # ---------------------------------------------------------------------------
 
@@ -232,6 +242,7 @@ def parse_resume(pdf_bytes: bytes, nlp=None) -> dict:
     skills = extract_skills(raw_text, nlp=nlp) if raw_text else []
     experience_years = extract_experience_years(raw_text) if raw_text else None
     education = extract_education(raw_text, nlp=nlp) if raw_text else None
+    email = extract_email(raw_text) if raw_text else None
 
     logger.debug(
         "Parsed resume: %d chars, %d skills, %s yrs exp, edu=%s",
@@ -246,4 +257,5 @@ def parse_resume(pdf_bytes: bytes, nlp=None) -> dict:
         "skills": skills,
         "experience_years": experience_years,
         "education": education,
+        "email": email,
     }

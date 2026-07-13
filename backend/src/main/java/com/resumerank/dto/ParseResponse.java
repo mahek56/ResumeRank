@@ -2,15 +2,20 @@ package com.resumerank.dto;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * Response from FastAPI POST /parse-resume.
  */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ParseResponse {
 
     private String rawText;
     private List<String> skills;
     private Integer experienceYears;
     private String education;
+    private String email;
 
     public ParseResponse() {}
 
@@ -25,4 +30,7 @@ public class ParseResponse {
 
     public String getEducation() { return education; }
     public void setEducation(String education) { this.education = education; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }
