@@ -106,10 +106,13 @@ def _fuzzy_token_set_ratio(s1: str, s2: str) -> int:
     tokens_b = set(s2.lower().split())
     if not tokens_a or not tokens_b:
         return 0
+    # intersection = tokens_a & tokens_b
+    # union = tokens_a | tokens_b
+    # # Jaccard on token sets × 100
+    # return round(len(intersection) / smaller * 100)
     intersection = tokens_a & tokens_b
-    union = tokens_a | tokens_b
-    # Jaccard on token sets × 100
-    return round(len(intersection) / len(union) * 100)
+    smaller = min(len(tokens_a), len(tokens_b))
+    return round(len(intersection) / smaller * 100)
 
 
 def keyword_score(
