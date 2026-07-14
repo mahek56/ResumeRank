@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import type { CandidateStatus } from "@/lib/types";
 
-type BadgeVariant = CandidateStatus | "info" | "default";
+type BadgeVariant = CandidateStatus | "info" | "default" | "success" | "error";
 
 interface BadgeProps {
   variant?: BadgeVariant;
@@ -20,6 +20,10 @@ const variantStyles: Record<BadgeVariant, string> = {
     "bg-[var(--color-info-muted)] text-[var(--color-info)] border border-[var(--color-info)]/30",
   default:
     "bg-[var(--color-bg-hover)] text-[var(--color-text-secondary)] border border-[var(--color-border)]",
+  success:
+    "bg-[var(--color-success-muted)] text-[var(--color-success)] border border-[var(--color-success)]/30",
+  error:
+    "bg-[var(--color-error-muted)] text-[var(--color-error)] border border-[var(--color-error)]/30",
 };
 
 export function Badge({ variant = "default", children, className }: BadgeProps) {
