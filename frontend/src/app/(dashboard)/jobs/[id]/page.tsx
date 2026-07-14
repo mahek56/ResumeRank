@@ -20,7 +20,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { CandidateRowSkeleton } from "@/components/ui/Skeleton";
 import { Modal } from "@/components/ui/Modal";
 import { api } from "@/lib/api";
-import type { CandidateStatus, SortField, SortDir } from "@/lib/types";
+import type { Candidate, CandidateStatus, SortField, SortDir } from "@/lib/types";
 
 // ---- Score bar ----
 
@@ -267,6 +267,90 @@ function UploadModal({
   );
 }
 
+// ---- Candidate Detail Modal ----
+
+function CandidateDetailModal({
+  candidate,
+  open,
+  onClose,
+}: {
+  candidate: Candidate | null;
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!candidate) return null;
+
+  return (
+    <Modal open={open} onClose={onClose} title="Candidate Details" size="md">
+      <div className="flex flex-col gap-4 text-sm text-[var(--color-text-secondary)]">
+        <div>
+          <h3 className="font-semibold text-[var(--color-text-primary)] text-base">{candidate.name}</h3>
+          <p>{candidate.email || "No email provided"}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 mt-1">
+          <div className="bg-[var(--color-bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
+            <div className="text-[10px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-semibold">Composite Score</div>
+            <div className="text-2xl font-mono text-[var(--color-text-primary)]">
+              {candidate.compositeScore !== null ? Math.round(candidate.compositeScore) : "—"}
+            </div>
+          </div>
+          <div className="bg-[var(--color-bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
+            <div className="text-[10px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-semibold">Scoring Method</div>
+            <div className="text-sm font-medium mt-2 text-[var(--color-text-primary)]">
+              {candidate.scoringMethod === "tfidf" ? "TF-IDF" : candidate.scoringMethod === "sentence-transformers" ? "Semantic (BERT)" : (candidate.scoringMethod || "—")}
+            </div>
+          </div>
+          <div className="bg-[var(--color-bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
+            <div className="text-[10px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-semibold">Semantic Score</div>
+            <div className="text-lg font-mono text-[var(--color-text-primary)]">
+              {candidate.semanticScore !== null ? Math.round(candidate.semanticScore) : "—"}
+            </div>
+          </div>
+          <div className="bg-[var(--color-bg-elevated)] p-3 rounded-[var(--radius-md)] border border-[var(--color-border)]">
+            <div className="text-[10px] text-[var(--color-text-tertiary)] mb-1 uppercase tracking-wider font-semibold">Keyword Score</div>
+            <div className="text-lg font-mono text-[var(--color-text-primary)]">
+              {candidate.keywordScore !== null ? Math.round(candidate.keywordScore) : "—"}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-1">
+          <div className="text-[10px] text-[var(--color-text-tertiary)] mb-2 uppercase tracking-wider font-semibold">Matched Skills</div>
+          {candidate.matchedSkills && candidate.matchedSkills.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {candidate.matchedSkills.map((sk) => (
+                <Badge key={sk} variant="success" className="text-xs px-2 py-0.5">{sk}</Badge>
+              ))}
+            </div>
+          ) : (
+            <div className="text-xs text-[var(--color-text-tertiary)]">—</div>
+          )}
+        </div>
+
+        <div className="mt-1">
+          <div className="text-[10px] text-[var(--color-text-tertiary)] mb-2 uppercase tracking-wider font-semibold">Missing Skills</div>
+          {candidate.missingSkills && candidate.missingSkills.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {candidate.missingSkills.map((sk) => (
+                <Badge key={sk} variant="error" className="text-xs px-2 py-0.5">{sk}</Badge>
+              ))}
+            </div>
+          ) : (
+            <div className="text-xs text-[var(--color-text-tertiary)]">None</div>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex justify-end pt-4 mt-4 border-t border-[var(--color-border)]">
+        <Button variant="ghost" size="md" onClick={onClose}>
+          Close
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
 // ---- Job Detail Page ----
 
 export default function JobDetailPage({
@@ -277,6 +361,7 @@ export default function JobDetailPage({
   const { id: jobId } = use(params);
   const { toast } = useToast();
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
 
   const {
     candidates,
@@ -393,7 +478,8 @@ export default function JobDetailPage({
                 candidates.map((c) => (
                   <tr
                     key={c.id}
-                    className="border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-hover)] transition-colors"
+                    onClick={() => setSelectedCandidate(c)}
+                    className="cursor-pointer border-b border-[var(--color-border)] last:border-0 hover:bg-[var(--color-bg-hover)] transition-colors"
                   >
                     {/* Name */}
                     <td className="px-4 py-3">
@@ -423,7 +509,7 @@ export default function JobDetailPage({
                     </td>
 
                     {/* Status */}
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <StatusSelect
                         value={c.status}
                         onChange={(s) => handleStatusChange(c.id, s)}
@@ -441,6 +527,12 @@ export default function JobDetailPage({
         onClose={() => setUploadOpen(false)}
         jobId={jobId}
         onUploaded={refetch}
+      />
+      
+      <CandidateDetailModal
+        candidate={selectedCandidate}
+        open={!!selectedCandidate}
+        onClose={() => setSelectedCandidate(null)}
       />
     </div>
   );
