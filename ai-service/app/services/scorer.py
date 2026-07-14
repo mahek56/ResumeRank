@@ -216,7 +216,7 @@ def score_candidate(
     # -- Composite --
     composite = round(SEMANTIC_WEIGHT * sem_score + KEYWORD_WEIGHT * kw_score, 2)
 
-    logger.debug(
+    logger.info(
         "Scored: composite=%.1f semantic=%.1f keyword=%.1f method=%s "
         "matched=%d/%d skills",
         composite,
