@@ -165,8 +165,8 @@ def keyword_score(
 # Composite scoring
 # ---------------------------------------------------------------------------
 
-SEMANTIC_WEIGHT = 0.6
-KEYWORD_WEIGHT = 0.4
+SEMANTIC_WEIGHT = 0.3
+KEYWORD_WEIGHT = 0.7
 
 
 def score_candidate(
