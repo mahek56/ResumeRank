@@ -100,39 +100,52 @@ public class CandidateService {
                                               String candidateName,
                                               String candidateEmail,
                                               User actor) {
+        log.info("uploadAndProcess START - jobId: {}, candidateName: {}", jobId, candidateName);
+
         // Step 1 — verify job exists and actor owns it
         Job job = jobService.getJobWithSkillsOrThrow(jobId);
         jobService.assertOwner(job, actor);
+        log.info("uploadAndProcess - Step 1: Job fetched. Has {} skills", job.getSkills() != null ? job.getSkills().size() : "null");
 
         // Step 2 — read bytes once (InputStream can only be consumed once)
         byte[] pdfBytes;
         try {
             pdfBytes = file.getBytes();
         } catch (Exception e) {
+            log.error("uploadAndProcess - Step 2: Failed to read bytes", e);
             throw new RuntimeException("Failed to read uploaded file: " + e.getMessage(), e);
         }
 
         // Store the PDF (validates MIME + size internally)
         String subPath = "jobs/" + jobId;
         String filePath = storageService.store(file, subPath);
-        log.debug("Stored resume at: {}", filePath);
+        log.info("uploadAndProcess - Step 2: Stored resume at {}", filePath);
 
         // Step 3 — call AI parse
         ParseResponse parsed = new ParseResponse();
         boolean parsingFailed = false;
         try {
+            log.info("uploadAndProcess - Step 3: Calling AI /parse-resume...");
             parsed = aiServiceClient.parseResume(
                     file.getOriginalFilename() != null ? file.getOriginalFilename() : "resume.pdf",
                     pdfBytes
             );
             if (parsed.getRawText() == null || parsed.getRawText().trim().isEmpty()) {
+                log.warn("uploadAndProcess - Step 3: Parsed rawText is null or empty");
                 parsingFailed = true;
                 parsed.setRawText("");
+            } else {
+                log.info("uploadAndProcess - Step 3: Parse succeeded. Text length: {}, skills: {}, email: {}", 
+                         parsed.getRawText().length(), 
+                         parsed.getSkills() != null ? parsed.getSkills().size() : 0,
+                         parsed.getEmail());
             }
         } catch (Exception e) {
-            log.error("Resume parsing failed for {}: {}", filePath, e.getMessage());
+            log.error("uploadAndProcess - Step 3: Resume parsing HTTP call failed", e);
             parsingFailed = true;
         }
+
+        log.info("uploadAndProcess - Before save Candidate. parsingFailed: {}", parsingFailed);
 
         // Step 4 — persist Candidate + CandidateSkills (we always save the candidate)
         String finalEmail = candidateEmail;
@@ -142,6 +155,8 @@ public class CandidateService {
         Candidate candidate = persistCandidate(job, candidateName, finalEmail,
                 filePath, parsed);
 
+        log.info("uploadAndProcess - Step 4: Candidate persisted. ID: {}, email: {}", candidate.getId(), candidate.getEmail());
+
         // Step 5 — build and execute score request if parsing succeeded
         boolean scoringFailed = parsingFailed;
         AiScoreResponse scoreResult = null;
@@ -149,10 +164,17 @@ public class CandidateService {
         if (!scoringFailed) {
             try {
                 if (job.getDescription() == null || job.getDescription().trim().isEmpty()) {
+                    log.warn("uploadAndProcess - Step 5: Job description empty");
                     throw new RuntimeException("Job description is empty. Cannot score.");
                 }
 
-                List<AiScoreRequest.SkillWeight> jobSkills = job.getSkills().stream()
+                if (job.getSkills() == null) {
+                    log.warn("uploadAndProcess - Step 5: Job skills list is NULL");
+                } else {
+                    log.info("uploadAndProcess - Step 5: Building score request with {} job skills", job.getSkills().size());
+                }
+
+                List<AiScoreRequest.SkillWeight> jobSkills = job.getSkills() == null ? List.of() : job.getSkills().stream()
                         .map(s -> new AiScoreRequest.SkillWeight(s.getName(), s.getWeight()))
                         .collect(Collectors.toList());
 
@@ -163,14 +185,19 @@ public class CandidateService {
                         parsed.getSkills() != null ? parsed.getSkills() : List.of()
                 );
 
+                log.info("uploadAndProcess - Step 5: Calling AI /score...");
                 scoreResult = aiServiceClient.scoreCandidate(scoreRequest);
+                log.info("uploadAndProcess - Step 5: Score succeeded. compositeScore: {}", scoreResult.getCompositeScore());
             } catch (Exception e) {
-                log.error("Scoring failed for candidate {}: {}", candidate.getId(), e.getMessage());
+                log.error("uploadAndProcess - Step 5: Scoring failed with Exception: {}", e.getMessage(), e);
                 scoringFailed = true;
             }
+        } else {
+            log.info("uploadAndProcess - Step 5: Skipped scoring because parsingFailed is true");
         }
 
         if (scoringFailed) {
+            log.warn("uploadAndProcess - Step 6: scoringFailed is true. Setting status to UPLOADED_SCORE_FAILED");
             String meta = "{\"status\":\"scoring_unavailable\"}";
             try {
                 meta = objectMapper.writeValueAsString(java.util.Map.of("status", "scoring_unavailable"));
@@ -179,12 +206,14 @@ public class CandidateService {
             return toResponse(candidate, null);
         }
 
+        log.info("uploadAndProcess - Step 7: Persisting Score to DB");
         // Step 7 — persist Score
         Score score = persistScore(candidate, scoreResult);
 
         // Step 8 — audit
         auditService.log("Candidate", candidate.getId(), "UPLOADED", actor, null);
 
+        log.info("uploadAndProcess END - successfully scored and saved");
         return toResponse(candidate, score);
     }
 
