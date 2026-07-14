@@ -6,6 +6,12 @@ Handles resume parsing (PDF → structured data) and scoring
 the Spring Boot backend — no auth on these endpoints.
 """
 
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+
 from contextlib import asynccontextmanager
 import logging
 
